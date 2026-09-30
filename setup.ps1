@@ -81,6 +81,11 @@ Write-Host "  1. Right-click the 'GitHub PDF Viewer' icon on your Desktop."
 Write-Host "  2. Select 'Pin to taskbar' (Win 11: 'Show more options' -> 'Pin to taskbar')."
 Write-Host "  3. Now you can click it anytime from your taskbar in 1 second!`n"
 
-# 6. Launch the viewer now
+# 6. Stop any older running instances and launch the fresh AppData viewer
 Write-Host "[*] Launching GitHub PDF & EPUB Viewer..." -ForegroundColor Green
+Get-CimInstance Win32_Process -Filter "Name = 'pythonw.exe' or Name = 'python.exe'" -ErrorAction SilentlyContinue | 
+    Where-Object { $_.CommandLine -like "*viewer.py*" } | 
+    ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+Start-Sleep -Milliseconds 400
+
 Start-Process "C:\Windows\System32\cmd.exe" -ArgumentList "/c start `"`" pythonw `"$viewerPath`"" -WindowStyle Hidden

@@ -124,6 +124,7 @@ def fetch_github_file(owner: str, repo: str, ref: str, file_path: str, use_cache
     Automatically detects Git LFS pointers and fetches the authentic binary from media.githubusercontent.com.
     Returns (Path to cached file, error string).
     """
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
     safe_name = f"{owner}_{repo}_{ref}_{file_path.replace('/', '_').replace('\\', '_')}"
     cached_file = CACHE_DIR / safe_name
 
@@ -416,6 +417,7 @@ def view_document(owner=None, repo=None, ref=None, filepath=None):
 
         # If mode == "pdf", convert EPUB to PDF and stream inline to native browser PDF viewer
         if mode == "pdf":
+            CACHE_DIR.mkdir(parents=True, exist_ok=True)
             pdf_cache_name = f"{owner}_{repo}_{ref}_{filepath.replace('/', '_').replace('\\', '_')}.pdf"
             cached_pdf = CACHE_DIR / pdf_cache_name
 
