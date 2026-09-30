@@ -561,6 +561,23 @@ def main():
     if args.url:
         target_url = f"{base_url}/view?url={urllib.parse.quote(args.url)}"
 
+    # Check if server is already running on this port
+    import socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    is_running = False
+    try:
+        sock.connect((args.host, args.port))
+        is_running = True
+        sock.close()
+    except OSError:
+        pass
+
+    if is_running:
+        print(f"[*] PdfViewer is already running on {base_url}. Opening browser...")
+        if not args.no_browser:
+            webbrowser.open(target_url)
+        return
+
     if not args.no_browser:
         import threading
         def open_browser():

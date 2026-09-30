@@ -58,6 +58,23 @@ if ($LASTEXITCODE -ne 0) {
     python -m pip install flask requests -q
 }
 
-# 4. Run the viewer
+# 4. Auto-create Desktop Shortcut on first run if missing
+$desktopShortcut = Join-Path ([System.Environment]::GetFolderPath("Desktop")) "GitHub PDF Viewer.lnk"
+if (-not (Test-Path $desktopShortcut)) {
+    try {
+        $wsh = New-Object -ComObject WScript.Shell
+        $sc = $wsh.CreateShortcut($desktopShortcut)
+        $sc.TargetPath = "C:\Windows\System32\cmd.exe"
+        $sc.Arguments = "/c start `"`" pythonw `"$appDir\viewer.py`""
+        $sc.WorkingDirectory = $appDir
+        $ico = Join-Path $appDir "book.ico"
+        if (Test-Path $ico) { $sc.IconLocation = "$ico,0" }
+        $sc.Description = "GitHub PDF & EPUB Viewer"
+        $sc.WindowStyle = 7
+        $sc.Save()
+    } catch {}
+}
+
+# 5. Run the viewer
 Write-Host "[*] Launching GitHub PDF & EPUB Viewer..." -ForegroundColor Green
 python (Join-Path $appDir "viewer.py") $args
