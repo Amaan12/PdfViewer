@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub PDF & EPUB Viewer</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📑</text></svg>">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --pdf-color: #ef4444;
+      --epub-color: #a855f7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px 16px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand h1 {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .brand-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .user-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #0284c726;
+      color: #38bdf8;
+      border: 1px solid #0284c74d;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"], select {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.15s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+
+    .bookmarklet-box {
+      background: #0f172a;
+      border: 1px dashed #475569;
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .bookmarklet-btn {
+      background: #1e1e2f;
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: grab;
+      text-decoration: none;
+      display: inline-block;
+      user-select: none;
+    }
+
+    .bookmarklet-btn:active {
+      cursor: grabbing;
+    }
+
+    .repo-select-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .file-list {
+      max-height: 280px;
+      overflow-y: auto;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      background: #0f172a;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid #1e293b;
+      font-size: 13px;
+    }
+
+    .file-item:last-child {
+      border-bottom: none;
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-right: 12px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .badge-pdf {
+      background: #ef444426;
+      color: var(--pdf-color);
+      border: 1px solid #ef44444d;
+    }
+
+    .badge-epub {
+      background: #a855f726;
+      color: var(--epub-color);
+      border: 1px solid #a855f74d;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #3341554d;
+      font-size: 13px;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .history-link {
+      color: var(--text);
+      text-decoration: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-right: 10px;
+    }
+
+    .history-link:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .empty-state {
+      padding: 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #ffffff4d;
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <span style="font-size: 32px;">📑</span>
+        <div>
+          <h1>GitHub PDF & EPUB Viewer</h1>
+          <div class="brand-sub">Seamless private repo document streaming & native reading</div>
+        </div>
+      </div>
+      <div class="user-badge" id="auth-status">
+        <span>🔒</span>
+        <span id="username-display">Connecting to Git Credential Manager...</span>
+      </div>
+    </header>
+
+    <!-- Paste URL Card -->
+    <div class="card">
+      <div class="card-title">
+        <span>Direct URL Paste</span>
+        <span style="font-size: 12px; font-weight: normal; color: var(--text-muted);">Supports private GitHub blob & raw URLs</span>
+      </div>
+      <form id="url-form" onsubmit="handleUrlSubmit(event)">
+        <div class="input-group">
+          <input 
+            type="text" 
+            id="url-input" 
+            placeholder="e.g. https://github.com/owner/repo/blob/main/books/example.pdf or .epub" 
+            required 
+            autocomplete="off"
+          />
+          <button type="submit" class="btn" onclick="submitMode='pdf'" id="open-btn" title="View in browser native PDF viewer">View PDF ↗</button>
+          <button type="submit" class="btn btn-secondary" onclick="submitMode='web'" title="Open in reflowable e-book web reader">Web Reader ↗</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- 1-Click Bookmarklet Card -->
+    <div class="card">
+      <div class="card-title">
+        <span>⚡ 1-Click Browser Bookmarklet</span>
+      </div>
+      <div class="bookmarklet-box">
+        <div>
+          <div style="font-weight: 500; font-size: 14px; margin-bottom: 4px;">Drag this button to your Bookmarks Bar:</div>
+          <div style="font-size: 12px; color: var(--text-muted);">
+            While browsing any private GitHub PDF or EPUB in your browser, click the bookmark to open it instantly.
+          </div>
+        </div>
+        <a 
+          href="javascript:(function(){var loc=window.location.href;window.open('http://localhost:{{ port }}/view?url='+encodeURIComponent(loc),'_blank');})();" 
+          class="bookmarklet-btn" 
+          title="Drag me to your bookmarks bar!"
+          onclick="alert('Drag this button to your browser bookmarks bar to use it on GitHub pages!'); return false;"
+        >
+          📖 Open in GitHub PDF
+        </a>
+      </div>
+    </div>
+
+    <!-- Repository Explorer Card -->
+    <div class="card">
+      <div class="card-title">
+        <span>📁 Repository Explorer</span>
+        <button class="btn btn-secondary btn-sm" onclick="loadRepositories(true)" id="refresh-repos-btn">↻ Refresh Repos</button>
+      </div>
+      <div class="repo-select-row">
+        <select id="repo-select" onchange="handleRepoChange()" style="flex: 2;">
+          <option value="">Loading repositories...</option>
+        </select>
+        <button class="btn btn-secondary" onclick="scanRepoFiles()" id="scan-btn" disabled>Scan for Documents</button>
+      </div>
+
+      <div class="file-list" id="repo-files-container">
+        <div class="empty-state">Select a repository above to find PDF and EPUB files.</div>
+      </div>
+    </div>
+
+    <!-- Recently Viewed Card -->
+    <div class="card">
+      <div class="card-title">
+        <span>🕒 Recently Viewed</span>
+        <button class="btn btn-secondary btn-sm" onclick="clearHistory()">Clear History</button>
+      </div>
+      <div id="history-container">
+        <div class="empty-state">No documents viewed yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const serverPort = {{ port }};
+
+    function saveToHistory(url, title, type) {
+      try {
+        let history = JSON.parse(localStorage.getItem('pdf_viewer_history') || '[]');
+        history = history.filter(item => item.url !== url);
+        history.unshift({
+          url: url,
+          title: title || url.split('/').pop(),
+          type: type || (url.toLowerCase().endsWith('.epub') ? 'epub' : 'pdf'),
+          date: new Date().toISOString()
+        });
+        if (history.length > 15) history.pop();
+        localStorage.setItem('pdf_viewer_history', JSON.stringify(history));
+        renderHistory();
+      } catch (e) {
+        console.error('History save error', e);
+      }
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('history-container');
+      const history = JSON.parse(localStorage.getItem('pdf_viewer_history') || '[]');
+      if (history.length === 0) {
+        container.innerHTML = '<div class="empty-state">No documents viewed yet.</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      history.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'history-item';
+        const badgeClass = item.type === 'epub' ? 'badge-epub' : 'badge-pdf';
+        row.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+            <span class="badge ${badgeClass}">${item.type.toUpperCase()}</span>
+            <a href="/view?url=${encodeURIComponent(item.url)}" target="_blank" class="history-link" title="${item.url}">${item.title}</a>
+          </div>
+          <a href="/view?url=${encodeURIComponent(item.url)}" target="_blank" class="btn btn-secondary btn-sm">Open ↗</a>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function clearHistory() {
+      localStorage.removeItem('pdf_viewer_history');
+      renderHistory();
+    }
+
+    let submitMode = 'pdf';
+    function handleUrlSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('url-input');
+      const url = input.value.trim();
+      if (!url) return;
+      const isEpub = url.toLowerCase().includes('.epub');
+      const targetUrl = isEpub && submitMode === 'pdf'
+        ? `/view?url=${encodeURIComponent(url)}&mode=pdf`
+        : (isEpub ? `/view?url=${encodeURIComponent(url)}&mode=web` : `/view?url=${encodeURIComponent(url)}`);
+      saveToHistory(url + (isEpub && submitMode === 'pdf' ? '&mode=pdf' : ''), url.split('/').pop(), isEpub ? (submitMode === 'pdf' ? 'pdf' : 'epub') : 'pdf');
+      window.open(targetUrl, '_blank');
+    }
+
+    async function loadAuthStatus() {
+      try {
+        const res = await fetch('/api/user');
+        const data = await res.json();
+        if (data.authenticated) {
+          document.getElementById('username-display').textContent = `Signed in as @${data.user}`;
+        } else {
+          document.getElementById('username-display').textContent = `Not authenticated (${data.error || 'Check Git credentials'})`;
+        }
+      } catch (err) {
+        document.getElementById('username-display').textContent = 'Offline / Error loading credentials';
+      }
+    }
+
+    async function loadRepositories(refresh = false) {
+      const select = document.getElementById('repo-select');
+      select.innerHTML = '<option value="">Loading repositories...</option>';
+      select.disabled = true;
+      document.getElementById('scan-btn').disabled = true;
+
+      try {
+        const res = await fetch(`/api/repos${refresh ? '?refresh=1' : ''}`);
+        const repos = await res.json();
+        select.innerHTML = '<option value="">-- Choose a repository --</option>';
+        if (Array.isArray(repos)) {
+          repos.forEach(repo => {
+            const opt = document.createElement('option');
+            opt.value = repo.full_name;
+            opt.dataset.defaultBranch = repo.default_branch || 'main';
+            opt.textContent = `${repo.full_name} ${repo.private ? '🔒' : '🌐'}`;
+            select.appendChild(opt);
+          });
+        }
+        select.disabled = false;
+      } catch (err) {
+        select.innerHTML = '<option value="">Failed to load repositories</option>';
+      }
+    }
+
+    function handleRepoChange() {
+      const select = document.getElementById('repo-select');
+      document.getElementById('scan-btn').disabled = !select.value;
+      if (select.value) {
+        scanRepoFiles();
+      }
+    }
+
+    async function scanRepoFiles() {
+      const select = document.getElementById('repo-select');
+      const repoFullName = select.value;
+      if (!repoFullName) return;
+
+      const opt = select.selectedOptions[0];
+      const defaultBranch = opt.dataset.defaultBranch || 'main';
+      const container = document.getElementById('repo-files-container');
+      container.innerHTML = '<div class="empty-state"><span class="spinner"></span> Scanning repository tree for PDF & EPUB files...</div>';
+
+      try {
+        const res = await fetch(`/api/tree?repo=${encodeURIComponent(repoFullName)}&ref=${encodeURIComponent(defaultBranch)}`);
+        const data = await res.json();
+
+        if (data.error) {
+          container.innerHTML = `<div class="empty-state" style="color:#ef4444;">Error: ${data.error}</div>`;
+          return;
+        }
+
+        const files = data.files || [];
+        if (files.length === 0) {
+          container.innerHTML = `<div class="empty-state">No PDF or EPUB files found in <strong>${repoFullName}</strong> (${defaultBranch}).</div>`;
+          return;
+        }
+
+        container.innerHTML = '';
+        files.forEach(f => {
+          const item = document.createElement('div');
+          item.className = 'file-item';
+          const ext = f.path.split('.').pop().toLowerCase();
+          const badgeClass = ext === 'epub' ? 'badge-epub' : 'badge-pdf';
+          const fileUrl = `https://github.com/${repoFullName}/blob/${defaultBranch}/${f.path}`;
+
+          let actionBtns = '';
+          if (ext === 'epub') {
+            actionBtns = `
+              <a href="/view?url=${encodeURIComponent(fileUrl)}&mode=pdf" target="_blank" class="btn btn-secondary btn-sm" onclick="saveToHistory('${fileUrl}&mode=pdf', '${f.path} (PDF)', 'pdf')" title="Convert EPUB to PDF and view in native browser PDF viewer">
+                View PDF ↗
+              </a>
+              <a href="/view?url=${encodeURIComponent(fileUrl)}&mode=web" target="_blank" class="btn btn-secondary btn-sm" onclick="saveToHistory('${fileUrl}', '${f.path}', 'epub')" title="Open as reflowable e-book reader">
+                Web ↗
+              </a>
+            `;
+          } else {
+            actionBtns = `
+              <a href="/view?url=${encodeURIComponent(fileUrl)}" target="_blank" class="btn btn-secondary btn-sm" onclick="saveToHistory('${fileUrl}', '${f.path}', 'pdf')">
+                View PDF ↗
+              </a>
+            `;
+          }
+
+          item.innerHTML = `
+            <div class="file-info" title="${f.path}">
+              <span class="badge ${badgeClass}">${ext}</span>
+              <span>${f.path}</span>
+            </div>
+            <div style="display:flex; gap:6px;">
+              ${actionBtns}
+            </div>
+          `;
+          container.appendChild(item);
+        });
+
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state" style="color:#ef4444;">Failed to scan files: ${err.message}</div>`;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadAuthStatus();
+      loadRepositories();
+      renderHistory();
+    });
+  </script>
+</body>
+</html>

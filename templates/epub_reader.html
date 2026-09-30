@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ filename }} - EPUB Reader</title>
+  <script src="/static/js/jszip.min.js"></script>
+  <script src="/static/js/epub.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #1f2937;
+      --header-bg: #f9fafb;
+      --border-color: #e5e7eb;
+      --accent-color: #3b82f6;
+      --sidebar-bg: #f3f4f6;
+      --nav-hover: rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="sepia"] {
+      --bg-color: #fbf0d9;
+      --text-color: #5f4b32;
+      --header-bg: #f4e4c1;
+      --border-color: #e6d3a8;
+      --accent-color: #92400e;
+      --sidebar-bg: #eedcb7;
+      --nav-hover: rgba(95, 75, 50, 0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #111827;
+      --text-color: #f3f4f6;
+      --header-bg: #1f2937;
+      --border-color: #374151;
+      --accent-color: #60a5fa;
+      --sidebar-bg: #182234;
+      --nav-hover: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 50px;
+      padding: 0 16px;
+      background-color: var(--header-bg);
+      border-bottom: 1px solid var(--border-color);
+      z-index: 20;
+      user-select: none;
+    }
+
+    .header-left, .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-title {
+      font-size: 13px;
+      font-weight: 600;
+      max-width: 350px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-left: 4px;
+    }
+
+    .btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--nav-hover);
+      border-color: var(--accent-color);
+    }
+
+    .theme-select {
+      display: flex;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .theme-opt {
+      padding: 4px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: var(--text-color);
+    }
+
+    .theme-opt.active {
+      background: var(--accent-color);
+      color: #fff;
+    }
+
+    .main-container {
+      display: flex;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Sidebar for TOC */
+    #sidebar {
+      width: 280px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      display: none;
+      flex-direction: column;
+      z-index: 15;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    #sidebar.open {
+      display: flex;
+    }
+
+    .toc-title {
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .toc-item {
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--text-color);
+      text-decoration: none;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 12px;
+    }
+
+    .toc-item:hover {
+      background: var(--nav-hover);
+      color: var(--accent-color);
+    }
+
+    /* Reader view */
+    #viewer-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      position: relative;
+      height: 100%;
+      background-color: var(--bg-color);
+    }
+
+    #viewer {
+      width: 100%;
+      height: 100%;
+    }
+
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.04);
+      border: none;
+      cursor: pointer;
+      font-size: 26px;
+      color: var(--text-color);
+      z-index: 10;
+      border-radius: 4px;
+      opacity: 0.2;
+      transition: opacity 0.2s, background 0.2s;
+    }
+
+    .nav-arrow:hover {
+      opacity: 1;
+      background: var(--nav-hover);
+    }
+
+    #prev-btn { left: 8px; }
+    #next-btn { right: 8px; }
+
+    /* Footer */
+    footer {
+      height: 28px;
+      background: var(--header-bg);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 11px;
+      color: var(--text-color);
+      opacity: 0.85;
+      user-select: none;
+    }
+
+    #loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      gap: 12px;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .progress-bar-bg {
+      width: 220px;
+      height: 6px;
+      background: var(--border-color);
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-color);
+      transition: width 0.15s ease;
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <header>
+    <div class="header-left">
+      <a href="/" class="btn" title="Back to Library">← Library</a>
+      <button id="toc-btn" class="btn" title="Table of Contents">📑 Chapters</button>
+      <span class="header-title" id="book-title">{{ filename }}</span>
+    </div>
+    <div class="header-right">
+      <div class="theme-select">
+        <button class="theme-opt active" data-set-theme="light" title="Light Theme">Light</button>
+        <button class="theme-opt" data-set-theme="sepia" title="Sepia Theme">Sepia</button>
+        <button class="theme-opt" data-set-theme="dark" title="Dark Theme">Dark</button>
+      </div>
+      <button id="font-dec" class="btn" title="Decrease font size">A-</button>
+      <button id="font-inc" class="btn" title="Increase font size">A+</button>
+      <a href="{{ raw_url }}&download=1" class="btn" title="Download original EPUB">💾 Download</a>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div id="sidebar">
+      <div class="toc-title">Table of Contents</div>
+      <div id="toc-items">Loading chapters...</div>
+    </div>
+
+    <div id="viewer-wrapper">
+      <button id="prev-btn" class="nav-arrow" title="Previous page (Left arrow)">‹</button>
+      <div id="viewer"></div>
+      <button id="next-btn" class="nav-arrow" title="Next page (Right arrow)">›</button>
+
+      <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p id="loading-status" style="font-size:14px; font-weight:500;">Downloading book from GitHub...</p>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="download-progress-bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span id="chapter-label">Ready</span>
+    <span id="progress-label">0%</span>
+  </footer>
+
+  <script>
+    const rawUrl = {{ raw_url | tojson }};
+    const storageKey = 'epub_cfi_' + encodeURIComponent(rawUrl);
+
+    let book = null;
+    let rendition = null;
+    let currentTheme = localStorage.getItem('epub_theme') || 'light';
+    let currentFontSize = parseInt(localStorage.getItem('epub_font_size') || '100', 10);
+
+    function applyTheme(theme) {
+      currentTheme = theme;
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('epub_theme', theme);
+      document.querySelectorAll('.theme-opt').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-set-theme') === theme);
+      });
+
+      if (rendition) {
+        if (theme === 'dark') {
+          rendition.themes.override('color', '#f3f4f6');
+          rendition.themes.override('background', '#111827');
+        } else if (theme === 'sepia') {
+          rendition.themes.override('color', '#5f4b32');
+          rendition.themes.override('background', '#fbf0d9');
+        } else {
+          rendition.themes.override('color', '#1f2937');
+          rendition.themes.override('background', '#ffffff');
+        }
+      }
+    }
+
+    function applyFontSize(size) {
+      currentFontSize = Math.min(Math.max(size, 60), 220);
+      localStorage.setItem('epub_font_size', currentFontSize);
+      if (rendition) {
+        rendition.themes.fontSize(`${currentFontSize}%`);
+      }
+    }
+
+    applyTheme(currentTheme);
+
+    // Stream download with progress and pass ArrayBuffer to ePub.js
+    async function loadAndRender() {
+      const statusEl = document.getElementById('loading-status');
+      const progressBar = document.getElementById('download-progress-bar');
+
+      try {
+        statusEl.textContent = 'Connecting to GitHub...';
+        const response = await fetch(rawUrl);
+
+        if (!response.ok) {
+          const err = await response.text();
+          throw new Error(`Server returned HTTP ${response.status}: ${err}`);
+        }
+
+        const contentLength = response.headers.get('content-length');
+        const total = contentLength ? parseInt(contentLength, 10) : 0;
+        let loaded = 0;
+
+        let arrayBuffer;
+
+        if (response.body && total > 0) {
+          const reader = response.body.getReader();
+          const chunks = [];
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            loaded += value.length;
+            const pct = Math.min(Math.round((loaded / total) * 100), 100);
+            progressBar.style.width = pct + '%';
+            statusEl.textContent = `Downloading: ${pct}% (${(loaded / 1024 / 1024).toFixed(1)} / ${(total / 1024 / 1024).toFixed(1)} MB)`;
+          }
+          const allChunks = new Uint8Array(loaded);
+          let offset = 0;
+          for (const chunk of chunks) {
+            allChunks.set(chunk, offset);
+            offset += chunk.length;
+          }
+          arrayBuffer = allChunks.buffer;
+        } else {
+          statusEl.textContent = 'Downloading book bytes...';
+          progressBar.style.width = '70%';
+          arrayBuffer = await response.arrayBuffer();
+        }
+
+        statusEl.textContent = 'Unpacking & rendering pages...';
+        progressBar.style.width = '100%';
+
+        // Initialize ePub.js with raw ArrayBuffer - avoids network Range issues completely!
+        book = ePub(arrayBuffer);
+        rendition = book.renderTo("viewer", {
+          width: "100%",
+          height: "100%",
+          spread: "auto",
+          flow: "paginated"
+        });
+
+        applyTheme(currentTheme);
+        applyFontSize(currentFontSize);
+
+        // Display book: restore saved CFI or start at beginning
+        const savedCfi = localStorage.getItem(storageKey);
+        try {
+          if (savedCfi) {
+            await rendition.display(savedCfi);
+          } else {
+            await rendition.display();
+          }
+        } catch (displayErr) {
+          console.warn('Saved location failed, starting from beginning', displayErr);
+          await rendition.display();
+        }
+
+        // Hide overlay as soon as first page renders
+        document.getElementById('loading-overlay').style.display = 'none';
+
+        // Load metadata asynchronously
+        book.loaded.metadata.then(meta => {
+          if (meta && meta.title) {
+            document.getElementById('book-title').textContent = meta.title;
+            document.title = meta.title + ' - EPUB Reader';
+          }
+        }).catch(e => console.warn('Meta err', e));
+
+        // Load TOC asynchronously
+        book.loaded.navigation.then(nav => {
+          const container = document.getElementById('toc-items');
+          container.innerHTML = '';
+          if (!nav.toc || nav.toc.length === 0) {
+            container.innerHTML = '<p style="color:gray; padding:8px; font-size:12px;">No chapters found.</p>';
+            return;
+          }
+          nav.toc.forEach(ch => {
+            const item = document.createElement('a');
+            item.className = 'toc-item';
+            item.textContent = (ch.label || 'Untitled').trim();
+            item.onclick = (e) => {
+              e.preventDefault();
+              rendition.display(ch.href);
+              if (window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.remove('open');
+              }
+            };
+            container.appendChild(item);
+          });
+        }).catch(e => console.warn('Nav err', e));
+
+        // Track location and save progress without slow locations.generate()
+        rendition.on('relocated', location => {
+          if (location && location.start) {
+            localStorage.setItem(storageKey, location.start.cfi);
+            if (book.spine && book.spine.length) {
+              const spineIdx = location.start.index || 0;
+              const pct = Math.round(((spineIdx + 1) / book.spine.length) * 100);
+              document.getElementById('progress-label').textContent = `${pct}%`;
+            }
+          }
+        });
+
+      } catch (err) {
+        console.error('Reader initialization failed:', err);
+        document.getElementById('loading-overlay').innerHTML = `
+          <div style="color:#ef4444; font-weight:600; font-size:15px; margin-bottom:6px;">⚠️ Unable to load EPUB</div>
+          <p style="color:#6b7280; font-size:13px; max-width:380px; text-align:center; line-height:1.4;">${err.message}</p>
+          <div style="display:flex; gap:10px; margin-top:14px;">
+            <a href="/" class="btn">← Back to Dashboard</a>
+            <a href="${rawUrl}&refresh=1" class="btn">↻ Force Re-fetch</a>
+          </div>
+        `;
+      }
+    }
+
+    // Navigation buttons
+    document.getElementById('prev-btn').addEventListener('click', () => rendition && rendition.prev());
+    document.getElementById('next-btn').addEventListener('click', () => rendition && rendition.next());
+
+    // Keyboard controls
+    document.addEventListener('keydown', (e) => {
+      if (!rendition) return;
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'h' || e.key === 'a') {
+        rendition.prev();
+      } else if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === 'l' || e.key === 'd' || e.key === ' ') {
+        rendition.next();
+      }
+    });
+
+    // TOC Toggle
+    document.getElementById('toc-btn').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    // Theme buttons
+    document.querySelectorAll('.theme-opt').forEach(btn => {
+      btn.addEventListener('click', () => applyTheme(btn.getAttribute('data-set-theme')));
+    });
+
+    // Font size
+    document.getElementById('font-inc').addEventListener('click', () => applyFontSize(currentFontSize + 10));
+    document.getElementById('font-dec').addEventListener('click', () => applyFontSize(currentFontSize - 10));
+
+    window.addEventListener('DOMContentLoaded', loadAndRender);
+  </script>
+</body>
+</html>
