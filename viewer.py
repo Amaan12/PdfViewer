@@ -233,6 +233,45 @@ def api_user():
     return jsonify({"authenticated": False, "error": "No GitHub credentials found in Git Credential Manager."})
 
 
+@app.route("/api/cache-info")
+def api_cache_info():
+    """Return disk cache file count and total size in MB."""
+    count = 0
+    total_bytes = 0
+    if CACHE_DIR.exists():
+        for p in CACHE_DIR.glob("*"):
+            if p.is_file():
+                count += 1
+                total_bytes += p.stat().st_size
+    return jsonify({
+        "count": count,
+        "size_bytes": total_bytes,
+        "size_mb": round(total_bytes / (1024 * 1024), 2)
+    })
+
+
+@app.route("/api/clear-cache", methods=["POST"])
+def api_clear_cache():
+    """Clear downloaded and converted book files from the local disk cache."""
+    cleared_count = 0
+    freed_bytes = 0
+    if CACHE_DIR.exists():
+        for p in CACHE_DIR.glob("*"):
+            if p.is_file():
+                try:
+                    freed_bytes += p.stat().st_size
+                    p.unlink(missing_ok=True)
+                    cleared_count += 1
+                except Exception as e:
+                    print(f"[Warning] Failed to delete {p}: {e}", file=sys.stderr)
+
+    return jsonify({
+        "success": True,
+        "cleared_count": cleared_count,
+        "freed_mb": round(freed_bytes / (1024 * 1024), 2)
+    })
+
+
 @app.route("/api/repos")
 def api_repos():
     """List user repositories (cached for 5 minutes)."""

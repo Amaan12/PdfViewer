@@ -150,6 +150,21 @@ class TestPdfViewer(unittest.TestCase):
         self.assertEqual(resp_pdf.headers.get("Content-Type"), "application/pdf")
         self.assertGreater(len(resp_pdf.data), 1000)
 
+    def test_cache_api(self):
+        # Test /api/cache-info
+        resp_info = self.client.get("/api/cache-info")
+        self.assertEqual(resp_info.status_code, 200)
+        info = resp_info.get_json()
+        self.assertIn("count", info)
+        self.assertIn("size_mb", info)
+
+        # Test /api/clear-cache
+        resp_clear = self.client.post("/api/clear-cache")
+        self.assertEqual(resp_clear.status_code, 200)
+        data = resp_clear.get_json()
+        self.assertTrue(data.get("success"))
+        self.assertIn("cleared_count", data)
+
 
 if __name__ == "__main__":
     unittest.main()
