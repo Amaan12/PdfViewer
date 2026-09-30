@@ -83,14 +83,17 @@ http://localhost:5000/view?url=https://github.com/owner/repo/blob/main/doc.pdf
 
 When you view a book, it is saved to a local `.cache/` folder so reopening it is instantaneous. If you want to delete all downloaded books from your computer:
 
-### Case 1: If using `run.bat` or Local Folder
-- **Option A (Command)**: Run in terminal:
+### Option 1: 1-Click from the Web Dashboard (Easiest)
+Click the **`🗑️ Clear Book Cache`** button in the top right of the dashboard. This immediately deletes downloaded PDFs and EPUBs from your disk while keeping your reading history intact.
+
+### Option 2: If using `run.bat` or Local Folder
+- **Via Command**: Run in terminal:
   ```powershell
   python viewer.py --clear-cache
   ```
-- **Option B (File Explorer)**: Simply delete the `.cache` folder inside the `PdfViewer` folder.
+- **Via File Explorer**: Simply delete the `.cache` folder inside the `PdfViewer` folder.
 
-### Case 2: If using the 1-Line PowerShell Command
+### Option 3: If using the 1-Line PowerShell Command
 Run this in PowerShell to delete all downloaded books:
 ```powershell
 Remove-Item "$env:LOCALAPPDATA\PdfViewerApp\.cache" -Recurse -Force -ErrorAction SilentlyContinue

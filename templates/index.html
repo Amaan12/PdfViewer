@@ -35,7 +35,7 @@
     }
 
     .container {
-      max-width: 860px;
+      max-width: 880px;
       margin: 0 auto;
     }
 
@@ -43,7 +43,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
       gap: 12px;
     }
@@ -64,6 +64,13 @@
       color: var(--text-muted);
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .user-badge {
       display: inline-flex;
       align-items: center;
@@ -71,10 +78,29 @@
       background: #0284c726;
       color: #38bdf8;
       border: 1px solid #0284c74d;
-      padding: 4px 10px;
+      padding: 6px 12px;
       border-radius: 9999px;
       font-size: 13px;
       font-weight: 500;
+    }
+
+    .alert-banner {
+      background: #10b98120;
+      border: 1px solid #10b98160;
+      color: #34d399;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .card {
@@ -89,10 +115,20 @@
     .card-title {
       font-size: 16px;
       font-weight: 600;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
     }
 
     .input-group {
@@ -110,18 +146,19 @@
       border-radius: 8px;
       font-size: 14px;
       outline: none;
-      transition: border-color 0.15s ease;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
     input[type="text"]:focus, select:focus {
       border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
     }
 
     .btn {
       background: var(--accent);
       color: white;
       border: none;
-      padding: 10px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       font-size: 14px;
       font-weight: 500;
@@ -129,7 +166,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: background-color 0.15s ease;
+      transition: all 0.15s ease;
       text-decoration: none;
       white-space: nowrap;
     }
@@ -148,45 +185,27 @@
     }
 
     .btn-sm {
-      padding: 5px 10px;
+      padding: 6px 12px;
       font-size: 12px;
       border-radius: 6px;
     }
 
-    .bookmarklet-box {
-      background: #0f172a;
-      border: 1px dashed #475569;
-      border-radius: 8px;
-      padding: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
+    .btn-clear {
+      background: #334155;
+      color: #f87171;
+      border: 1px solid #ef44444d;
     }
 
-    .bookmarklet-btn {
-      background: #1e1e2f;
-      color: #38bdf8;
-      border: 1px solid #38bdf8;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: grab;
-      text-decoration: none;
-      display: inline-block;
-      user-select: none;
-    }
-
-    .bookmarklet-btn:active {
-      cursor: grabbing;
+    .btn-clear:hover {
+      background: #ef444422;
+      border-color: #ef444488;
+      color: #fca5a5;
     }
 
     .repo-select-row {
       display: flex;
       gap: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       flex-wrap: wrap;
     }
 
@@ -194,7 +213,7 @@
       display: flex;
       gap: 8px;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       flex-wrap: wrap;
     }
 
@@ -202,7 +221,7 @@
       background: #0f172a;
       border: 1px solid var(--card-border);
       color: var(--text-muted);
-      padding: 4px 10px;
+      padding: 4px 12px;
       border-radius: 9999px;
       font-size: 12px;
       cursor: pointer;
@@ -215,8 +234,13 @@
       border-color: var(--accent);
     }
 
+    .count-text {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
     .file-list {
-      max-height: 320px;
+      max-height: 380px;
       overflow-y: auto;
       border: 1px solid var(--card-border);
       border-radius: 8px;
@@ -270,7 +294,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 0;
+      padding: 9px 0;
       border-bottom: 1px solid #3341554d;
       font-size: 13px;
     }
@@ -294,7 +318,7 @@
     }
 
     .empty-state {
-      padding: 24px;
+      padding: 28px;
       text-align: center;
       color: var(--text-muted);
       font-size: 13px;
@@ -313,10 +337,37 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    .bookmarklet-box {
+      background: #0f172a;
+      border: 1px dashed #475569;
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .bookmarklet-btn {
+      background: #1e1e2f;
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: grab;
+      text-decoration: none;
+      display: inline-block;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- Header -->
     <header>
       <div class="brand">
         <span style="font-size: 32px;">📑</span>
@@ -325,11 +376,28 @@
           <div class="brand-sub">Private repo document streaming, native PDF view & reflowable e-book reader</div>
         </div>
       </div>
-      <div class="user-badge" id="auth-status">
-        <span>🔒</span>
-        <span id="username-display">Connecting to Git Credential Manager...</span>
+      <div class="header-actions">
+        <div class="user-badge" id="auth-status">
+          <span>🔒</span>
+          <span id="username-display">Connecting to Git Credential Manager...</span>
+        </div>
+        <!-- ONLY ONE BUTTON TO CLEAR PDF/EPUB CACHES (KEEPS READING HISTORY) -->
+        <button 
+          class="btn btn-clear btn-sm" 
+          id="clear-cache-btn" 
+          onclick="clearBookDiskCache()" 
+          title="Deletes downloaded PDF & EPUB files from disk. Reading history & bookmarks are kept intact."
+        >
+          🗑️ Clear Book Cache (<span id="cache-stat-display">0 MB</span>)
+        </button>
       </div>
     </header>
+
+    <!-- Notification Banner -->
+    <div class="alert-banner" id="cache-banner">
+      <span id="cache-banner-text">Cache cleared successfully.</span>
+      <button onclick="document.getElementById('cache-banner').style.display='none'" style="background:none; border:none; color:inherit; font-size:16px; cursor:pointer; padding:0 4px;">✕</button>
+    </div>
 
     <!-- Paste URL Card -->
     <div class="card">
@@ -350,6 +418,75 @@
           <button type="submit" class="btn btn-secondary" onclick="submitMode='web'" title="Open in reflowable e-book web reader">Web Reader ↗</button>
         </div>
       </form>
+    </div>
+
+    <!-- Repository Explorer Card -->
+    <div class="card">
+      <div class="card-title">
+        <span>📁 Repository Explorer</span>
+        <button class="btn btn-secondary btn-sm" onclick="loadRepositories(true)" id="refresh-repos-btn">↻ Refresh Repos</button>
+      </div>
+
+      <!-- 1. Search Repositories Input -->
+      <div style="margin-bottom: 10px;">
+        <label class="field-label" for="repo-search-input">1. Search & Select Repository</label>
+        <input 
+          type="text" 
+          id="repo-search-input" 
+          placeholder="🔍 Type to filter repositories... (e.g. Books, literature)" 
+          oninput="filterReposList()"
+          autocomplete="off"
+          style="width: 100%;"
+        />
+      </div>
+
+      <!-- Repo Dropdown Selection Row -->
+      <div class="repo-select-row">
+        <select id="repo-select" onchange="handleRepoChange()" style="flex: 2;">
+          <option value="">Loading repositories...</option>
+        </select>
+        <button class="btn btn-secondary" onclick="scanRepoFiles(true)" id="scan-btn" disabled>↻ Re-scan</button>
+      </div>
+      <div id="repo-count-badge" class="count-text" style="margin-top: -6px; margin-bottom: 16px;"></div>
+
+      <!-- 2. Search Books in Selected Repository -->
+      <div id="book-search-section" style="display: none; border-top: 1px solid var(--card-border); padding-top: 16px; margin-bottom: 12px;">
+        <div style="margin-bottom: 10px;">
+          <label class="field-label" for="book-search-input">2. Search Books in this Repository</label>
+          <input 
+            type="text" 
+            id="book-search-input" 
+            placeholder="🔍 Search books by title, author, or folder (e.g. game design, yoga, stoic)..." 
+            oninput="filterBooksList()"
+            autocomplete="off"
+            style="width: 100%;"
+          />
+        </div>
+
+        <!-- Filter Chips (All / PDFs / EPUBs) -->
+        <div class="filter-row">
+          <button class="chip active" id="chip-all" onclick="setTypeFilter('all')">All (<span id="count-all">0</span>)</button>
+          <button class="chip" id="chip-pdf" onclick="setTypeFilter('pdf')">PDFs (<span id="count-pdf">0</span>)</button>
+          <button class="chip" id="chip-epub" onclick="setTypeFilter('epub')">EPUBs (<span id="count-epub">0</span>)</button>
+          <span id="search-match-count" class="count-text" style="margin-left: auto;"></span>
+        </div>
+      </div>
+
+      <!-- Files List Container -->
+      <div class="file-list" id="repo-files-container">
+        <div class="empty-state">Select a repository above to find PDF and EPUB files.</div>
+      </div>
+    </div>
+
+    <!-- Recently Viewed Card (Persisted in localStorage; NOT cleared by Clear Book Cache) -->
+    <div class="card">
+      <div class="card-title">
+        <span>🕒 Recently Viewed (History)</span>
+        <span style="font-size: 12px; font-weight: normal; color: var(--text-muted);">Saved locally</span>
+      </div>
+      <div id="history-container">
+        <div class="empty-state">No documents viewed yet.</div>
+      </div>
     </div>
 
     <!-- 1-Click Bookmarklet Card -->
@@ -374,89 +511,6 @@
         </a>
       </div>
     </div>
-
-    <!-- Repository Explorer Card -->
-    <div class="card">
-      <div class="card-title">
-        <span>📁 Repository Explorer</span>
-        <button class="btn btn-secondary btn-sm" onclick="loadRepositories(true)" id="refresh-repos-btn">↻ Refresh Repos</button>
-      </div>
-
-      <!-- Repo Search Input -->
-      <div style="margin-bottom: 10px; display: flex; gap: 8px; align-items: center;">
-        <input 
-          type="text" 
-          id="repo-search-input" 
-          placeholder="🔍 Filter repository list... (e.g. books, 50cent, study)" 
-          oninput="filterReposList()"
-          style="padding: 7px 12px; font-size: 13px;"
-          autocomplete="off"
-        />
-        <span id="repo-count-badge" style="font-size:12px; color:var(--text-muted); white-space:nowrap;"></span>
-      </div>
-
-      <!-- Repo Dropdown Selection -->
-      <div class="repo-select-row">
-        <select id="repo-select" onchange="handleRepoChange()" style="flex: 2;">
-          <option value="">Loading repositories...</option>
-        </select>
-        <button class="btn btn-secondary" onclick="scanRepoFiles(true)" id="scan-btn" disabled>↻ Re-scan</button>
-      </div>
-
-      <!-- Book Search & Filters Inside Selected Repo -->
-      <div id="book-search-container" style="display:none; margin-top: 14px; margin-bottom: 12px;">
-        <div style="margin-bottom: 8px;">
-          <input 
-            type="text" 
-            id="book-search-input" 
-            placeholder="🔍 Search books in this repo by title or folder (e.g. food lab, design, yoga)..." 
-            oninput="applyBookFilters()"
-            style="padding: 8px 12px; font-size: 13px; width:100%;"
-            autocomplete="off"
-          />
-        </div>
-        <div class="filter-row">
-          <button class="chip active" id="chip-all" onclick="setBookTypeFilter('all')">All (<span id="count-all">0</span>)</button>
-          <button class="chip" id="chip-pdf" onclick="setBookTypeFilter('pdf')">PDFs (<span id="count-pdf">0</span>)</button>
-          <button class="chip" id="chip-epub" onclick="setBookTypeFilter('epub')">EPUBs (<span id="count-epub">0</span>)</button>
-          <span id="search-match-count" style="font-size:12px; color:var(--text-muted); margin-left:auto;"></span>
-        </div>
-      </div>
-
-      <!-- Files Container -->
-      <div class="file-list" id="repo-files-container">
-        <div class="empty-state">Select a repository above to find PDF and EPUB files.</div>
-      </div>
-    </div>
-
-    <!-- Downloaded Books Disk Cache Card -->
-    <div class="card">
-      <div class="card-title">
-        <span>💾 Downloaded Book Cache (Disk)</span>
-        <span id="cache-stats-badge" style="font-size: 12px; font-weight: normal; color: var(--text-muted);">Checking disk...</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-        <div style="font-size: 13px; color: var(--text-muted); max-width: 580px;">
-          Downloaded books and converted PDFs stored locally on disk for instant/offline viewing. 
-          Clearing this deletes local files from disk <strong>without clearing your reading history or bookmarks</strong>.
-        </div>
-        <button class="btn btn-secondary btn-sm" onclick="clearBookDiskCache()" id="clear-cache-btn">
-          🗑️ Clear Downloaded Books
-        </button>
-      </div>
-      <div id="cache-notice" style="display:none; margin-top:10px; font-size:12px; color:#10b981;"></div>
-    </div>
-
-    <!-- Recently Viewed Card (Persists in localStorage) -->
-    <div class="card">
-      <div class="card-title">
-        <span>🕒 Recently Viewed (History)</span>
-        <button class="btn btn-secondary btn-sm" onclick="clearHistory()">Clear History</button>
-      </div>
-      <div id="history-container">
-        <div class="empty-state">No documents viewed yet.</div>
-      </div>
-    </div>
   </div>
 
   <script>
@@ -465,70 +519,6 @@
     let allRepos = [];
     let currentRepoFiles = [];
     let activeTypeFilter = 'all';
-
-    // ==================== Recently Viewed History ====================
-    function saveToHistory(url, title, type) {
-      try {
-        let history = JSON.parse(localStorage.getItem('pdf_viewer_history') || '[]');
-        history = history.filter(item => item.url !== url);
-        history.unshift({
-          url: url,
-          title: title || url.split('/').pop(),
-          type: type || (url.toLowerCase().includes('.epub') ? 'epub' : 'pdf'),
-          date: new Date().toISOString()
-        });
-        if (history.length > 25) history.pop();
-        localStorage.setItem('pdf_viewer_history', JSON.stringify(history));
-        renderHistory();
-      } catch (e) {
-        console.error('History save error', e);
-      }
-    }
-
-    function renderHistory() {
-      const container = document.getElementById('history-container');
-      const history = JSON.parse(localStorage.getItem('pdf_viewer_history') || '[]');
-      if (history.length === 0) {
-        container.innerHTML = '<div class="empty-state">No documents viewed yet.</div>';
-        return;
-      }
-
-      container.innerHTML = '';
-      history.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'history-item';
-        const badgeClass = item.type === 'epub' ? 'badge-epub' : 'badge-pdf';
-        row.innerHTML = `
-          <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
-            <span class="badge ${badgeClass}">${item.type.toUpperCase()}</span>
-            <a href="/view?url=${encodeURIComponent(item.url)}" target="_blank" class="history-link" title="${item.url}">${item.title}</a>
-          </div>
-          <a href="/view?url=${encodeURIComponent(item.url)}" target="_blank" class="btn btn-secondary btn-sm">Open ↗</a>
-        `;
-        container.appendChild(row);
-      });
-    }
-
-    function clearHistory() {
-      localStorage.removeItem('pdf_viewer_history');
-      renderHistory();
-    }
-
-    // ==================== URL Paste Form ====================
-    let submitMode = 'pdf';
-    function handleUrlSubmit(e) {
-      e.preventDefault();
-      const input = document.getElementById('url-input');
-      const url = input.value.trim();
-      if (!url) return;
-      const isEpub = url.toLowerCase().includes('.epub');
-      const targetUrl = isEpub && submitMode === 'pdf'
-        ? `/view?url=${encodeURIComponent(url)}&mode=pdf`
-        : (isEpub ? `/view?url=${encodeURIComponent(url)}&mode=web` : `/view?url=${encodeURIComponent(url)}`);
-      saveToHistory(url + (isEpub && submitMode === 'pdf' ? '&mode=pdf' : ''), url.split('/').pop(), isEpub ? (submitMode === 'pdf' ? 'pdf' : 'epub') : 'pdf');
-      window.open(targetUrl, '_blank');
-      refreshCacheStats();
-    }
 
     // ==================== Auth Status ====================
     async function loadAuthStatus() {
@@ -545,7 +535,44 @@
       }
     }
 
-    // ==================== Repositories (Searchable & Cached) ====================
+    // ==================== Disk Cache Management (Only One Button) ====================
+    async function refreshCacheStats() {
+      try {
+        const res = await fetch('/api/cache-info');
+        const data = await res.json();
+        const statSpan = document.getElementById('cache-stat-display');
+        statSpan.textContent = `${data.size_mb} MB (${data.count} file${data.count === 1 ? '' : 's'})`;
+      } catch (e) {
+        document.getElementById('cache-stat-display').textContent = 'Offline';
+      }
+    }
+
+    async function clearBookDiskCache() {
+      const btn = document.getElementById('clear-cache-btn');
+      btn.disabled = true;
+      btn.innerHTML = '🗑️ Clearing...';
+
+      try {
+        const res = await fetch('/api/clear-cache', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          const banner = document.getElementById('cache-banner');
+          const bannerText = document.getElementById('cache-banner-text');
+          bannerText.textContent = `✓ Cleared ${data.cleared_count} downloaded book files (${data.freed_mb} MB freed). Your reading history is kept intact.`;
+          banner.style.display = 'flex';
+          setTimeout(() => { banner.style.display = 'none'; }, 8000);
+          refreshCacheStats();
+        }
+      } catch (err) {
+        alert('Failed to clear cache: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '🗑️ Clear Book Cache (<span id="cache-stat-display">0 MB</span>)';
+        refreshCacheStats();
+      }
+    }
+
+    // ==================== Repository List (Searchable & Cached) ====================
     async function loadRepositories(forceRefresh = false) {
       const select = document.getElementById('repo-select');
 
@@ -557,9 +584,10 @@
           if (Array.isArray(parsed.repos) && parsed.repos.length > 0) {
             allRepos = parsed.repos;
             populateRepoSelect(allRepos);
+            checkAutoSelectRepo();
           }
         } catch (e) {
-          console.warn('Cache parse failed', e);
+          console.warn('Repo cache parse failed', e);
         }
       }
 
@@ -575,6 +603,7 @@
             allRepos = repos;
             localStorage.setItem('pdf_cached_repos', JSON.stringify({ timestamp: Date.now(), repos: allRepos }));
             populateRepoSelect(allRepos);
+            checkAutoSelectRepo();
           } else {
             select.innerHTML = `<option value="">Error: ${repos.error || 'Failed to load'}</option>`;
           }
@@ -603,23 +632,47 @@
         select.value = prevVal;
       }
 
-      document.getElementById('repo-count-badge').textContent = `${repos.length} repos`;
+      const countBadge = document.getElementById('repo-count-badge');
+      if (countBadge) {
+        countBadge.textContent = `Showing ${repos.length} of ${allRepos.length} repositories`;
+      }
     }
 
     function filterReposList() {
-      const query = document.getElementById('repo-search-input').value.trim().toLowerCase();
+      const query = (document.getElementById('repo-search-input').value || '').trim().toLowerCase();
       const filtered = allRepos.filter(r => r.full_name.toLowerCase().includes(query));
       populateRepoSelect(filtered);
-      document.getElementById('repo-count-badge').textContent = `${filtered.length} of ${allRepos.length} repos`;
+
+      const select = document.getElementById('repo-select');
+      // If user filtered down to exactly 1 repo, or query matches exact repo name, auto-highlight
+      if (filtered.length === 1 && query.length > 2) {
+        select.value = filtered[0].full_name;
+        handleRepoChange();
+      }
+    }
+
+    function checkAutoSelectRepo() {
+      const lastRepo = localStorage.getItem('pdf_last_repo');
+      const select = document.getElementById('repo-select');
+      if (lastRepo && select && Array.from(select.options).some(o => o.value === lastRepo)) {
+        select.value = lastRepo;
+        handleRepoChange();
+      }
     }
 
     function handleRepoChange() {
       const select = document.getElementById('repo-select');
-      document.getElementById('scan-btn').disabled = !select.value;
+      const scanBtn = document.getElementById('scan-btn');
+      const bookSearchSection = document.getElementById('book-search-section');
+
       if (select.value) {
+        scanBtn.disabled = false;
+        localStorage.setItem('pdf_last_repo', select.value);
+        bookSearchSection.style.display = 'block';
         scanRepoFiles();
       } else {
-        document.getElementById('book-search-container').style.display = 'none';
+        scanBtn.disabled = true;
+        bookSearchSection.style.display = 'none';
         document.getElementById('repo-files-container').innerHTML = '<div class="empty-state">Select a repository above to find PDF and EPUB files.</div>';
       }
     }
@@ -631,9 +684,8 @@
       if (!repoFullName) return;
 
       const opt = select.selectedOptions[0];
-      const defaultBranch = opt.dataset.defaultBranch || 'main';
+      const defaultBranch = opt ? (opt.dataset.defaultBranch || 'main') : 'main';
       const container = document.getElementById('repo-files-container');
-      const searchBox = document.getElementById('book-search-container');
 
       // Check localStorage cache for tree (0ms instant display)
       const cacheKey = `repo_tree_${repoFullName}_${defaultBranch}`;
@@ -644,12 +696,13 @@
             currentRepoFiles = JSON.parse(cachedTree);
             displayRepoFiles(currentRepoFiles);
             return;
-          } catch (e) {}
+          } catch (e) {
+            console.warn('Tree cache parse failed', e);
+          }
         }
       }
 
       container.innerHTML = '<div class="empty-state"><span class="spinner"></span> Scanning repository tree for PDF & EPUB files...</div>';
-      searchBox.style.display = 'none';
 
       try {
         const res = await fetch(`/api/tree?repo=${encodeURIComponent(repoFullName)}&ref=${encodeURIComponent(defaultBranch)}`);
@@ -671,14 +724,10 @@
 
     function displayRepoFiles(files) {
       const container = document.getElementById('repo-files-container');
-      const searchBox = document.getElementById('book-search-container');
       const repoFullName = document.getElementById('repo-select').value;
-      const opt = document.getElementById('repo-select').selectedOptions[0];
-      const defaultBranch = opt ? (opt.dataset.defaultBranch || 'main') : 'main';
 
       if (!files || files.length === 0) {
         container.innerHTML = `<div class="empty-state">No PDF or EPUB files found in <strong>${repoFullName}</strong>.</div>`;
-        searchBox.style.display = 'none';
         return;
       }
 
@@ -689,32 +738,35 @@
       document.getElementById('count-pdf').textContent = pdfsCount;
       document.getElementById('count-epub').textContent = epubsCount;
 
-      searchBox.style.display = 'block';
-      applyBookFilters();
+      filterBooksList();
     }
 
-    function setBookTypeFilter(type) {
+    function setTypeFilter(type) {
       activeTypeFilter = type;
       document.querySelectorAll('.filter-row .chip').forEach(c => c.classList.remove('active'));
-      document.getElementById(`chip-${type}`).classList.add('active');
-      applyBookFilters();
+      const activeChip = document.getElementById(`chip-${type}`);
+      if (activeChip) activeChip.classList.add('active');
+      filterBooksList();
     }
 
-    function applyBookFilters() {
+    function filterBooksList() {
       const container = document.getElementById('repo-files-container');
       const query = (document.getElementById('book-search-input').value || '').trim().toLowerCase();
       const repoFullName = document.getElementById('repo-select').value;
       const opt = document.getElementById('repo-select').selectedOptions[0];
       const defaultBranch = opt ? (opt.dataset.defaultBranch || 'main') : 'main';
 
-      let filtered = currentRepoFiles.filter(f => {
+      const filtered = currentRepoFiles.filter(f => {
         const matchesQuery = !query || f.path.toLowerCase().includes(query);
         const ext = f.path.split('.').pop().toLowerCase();
         const matchesType = (activeTypeFilter === 'all') || (activeTypeFilter === ext);
         return matchesQuery && matchesType;
       });
 
-      document.getElementById('search-match-count').textContent = `Showing ${filtered.length} of ${currentRepoFiles.length}`;
+      const matchCountEl = document.getElementById('search-match-count');
+      if (matchCountEl) {
+        matchCountEl.textContent = `Showing ${filtered.length} of ${currentRepoFiles.length} books`;
+      }
 
       if (filtered.length === 0) {
         container.innerHTML = '<div class="empty-state">No books match your search filter.</div>';
@@ -732,25 +784,25 @@
         let actionBtns = '';
         if (ext === 'epub') {
           actionBtns = `
-            <a href="/view?url=${encodeURIComponent(fileUrl)}&mode=pdf" target="_blank" class="btn btn-secondary btn-sm" onclick="saveToHistory('${fileUrl}&mode=pdf', '${f.path} (PDF)', 'pdf')" title="Convert EPUB to PDF and view in browser PDF viewer">
+            <a href="/view?url=${encodeURIComponent(fileUrl)}&mode=pdf" target="_blank" class="btn btn-secondary btn-sm" onclick="saveToHistory('${fileUrl}&mode=pdf', '${escapeHtml(f.path)} (PDF)', 'pdf')" title="Convert EPUB to PDF and view in browser PDF viewer">
               View PDF ↗
             </a>
-            <a href="/view?url=${encodeURIComponent(fileUrl)}&mode=web" target="_blank" class="btn btn-secondary btn-sm" onclick="saveToHistory('${fileUrl}', '${f.path}', 'epub')" title="Open as reflowable e-book web reader">
+            <a href="/view?url=${encodeURIComponent(fileUrl)}&mode=web" target="_blank" class="btn btn-secondary btn-sm" onclick="saveToHistory('${fileUrl}', '${escapeHtml(f.path)}', 'epub')" title="Open as reflowable e-book web reader">
               Web ↗
             </a>
           `;
         } else {
           actionBtns = `
-            <a href="/view?url=${encodeURIComponent(fileUrl)}" target="_blank" class="btn btn-secondary btn-sm" onclick="saveToHistory('${fileUrl}', '${f.path}', 'pdf')">
+            <a href="/view?url=${encodeURIComponent(fileUrl)}" target="_blank" class="btn btn-secondary btn-sm" onclick="saveToHistory('${fileUrl}', '${escapeHtml(f.path)}', 'pdf')">
               View PDF ↗
             </a>
           `;
         }
 
         item.innerHTML = `
-          <div class="file-info" title="${f.path}">
+          <div class="file-info" title="${escapeHtml(f.path)}">
             <span class="badge ${badgeClass}">${ext}</span>
-            <span>${f.path}</span>
+            <span>${escapeHtml(f.path)}</span>
           </div>
           <div style="display:flex; gap:6px;">
             ${actionBtns}
@@ -760,41 +812,72 @@
       });
     }
 
-    // ==================== Disk Cache Management ====================
-    async function refreshCacheStats() {
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    // ==================== URL Paste Form ====================
+    let submitMode = 'pdf';
+    function handleUrlSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('url-input');
+      const url = input.value.trim();
+      if (!url) return;
+      const isEpub = url.toLowerCase().includes('.epub');
+      const targetUrl = isEpub && submitMode === 'pdf'
+        ? `/view?url=${encodeURIComponent(url)}&mode=pdf`
+        : (isEpub ? `/view?url=${encodeURIComponent(url)}&mode=web` : `/view?url=${encodeURIComponent(url)}`);
+      saveToHistory(url + (isEpub && submitMode === 'pdf' ? '&mode=pdf' : ''), url.split('/').pop(), isEpub ? (submitMode === 'pdf' ? 'pdf' : 'epub') : 'pdf');
+      window.open(targetUrl, '_blank');
+      setTimeout(refreshCacheStats, 1500);
+    }
+
+    // ==================== Recently Viewed History (Persists in localStorage) ====================
+    function saveToHistory(url, title, type) {
       try {
-        const res = await fetch('/api/cache-info');
-        const data = await res.json();
-        const badge = document.getElementById('cache-stats-badge');
-        badge.textContent = `${data.count} cached book${data.count === 1 ? '' : 's'} (${data.size_mb} MB on disk)`;
+        let history = JSON.parse(localStorage.getItem('pdf_viewer_history') || '[]');
+        history = history.filter(item => item.url !== url);
+        history.unshift({
+          url: url,
+          title: title || url.split('/').pop(),
+          type: type || (url.toLowerCase().includes('.epub') ? 'epub' : 'pdf'),
+          date: new Date().toISOString()
+        });
+        if (history.length > 30) history.pop();
+        localStorage.setItem('pdf_viewer_history', JSON.stringify(history));
+        renderHistory();
       } catch (e) {
-        document.getElementById('cache-stats-badge').textContent = 'Cache status offline';
+        console.error('History save error', e);
       }
     }
 
-    async function clearBookDiskCache() {
-      const btn = document.getElementById('clear-cache-btn');
-      const notice = document.getElementById('cache-notice');
-      btn.disabled = true;
-      btn.textContent = 'Clearing...';
-
-      try {
-        const res = await fetch('/api/clear-cache', { method: 'POST' });
-        const data = await res.json();
-        if (data.success) {
-          notice.style.display = 'block';
-          notice.textContent = `✓ Cleared ${data.cleared_count} cached book files (${data.freed_mb} MB freed). Your reading history is preserved.`;
-          setTimeout(() => { notice.style.display = 'none'; }, 6000);
-          refreshCacheStats();
-        }
-      } catch (err) {
-        alert('Failed to clear cache: ' + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = '🗑️ Clear Downloaded Books';
+    function renderHistory() {
+      const container = document.getElementById('history-container');
+      const history = JSON.parse(localStorage.getItem('pdf_viewer_history') || '[]');
+      if (history.length === 0) {
+        container.innerHTML = '<div class="empty-state">No documents viewed yet.</div>';
+        return;
       }
+
+      container.innerHTML = '';
+      history.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'history-item';
+        const badgeClass = item.type === 'epub' ? 'badge-epub' : 'badge-pdf';
+        row.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+            <span class="badge ${badgeClass}">${(item.type || 'pdf').toUpperCase()}</span>
+            <a href="/view?url=${encodeURIComponent(item.url)}" target="_blank" class="history-link" title="${escapeHtml(item.url)}">${escapeHtml(item.title)}</a>
+          </div>
+          <a href="/view?url=${encodeURIComponent(item.url)}" target="_blank" class="btn btn-secondary btn-sm">Open ↗</a>
+        `;
+        container.appendChild(row);
+      });
     }
 
+    // ==================== Initialize ====================
     window.addEventListener('DOMContentLoaded', () => {
       loadAuthStatus();
       loadRepositories();
