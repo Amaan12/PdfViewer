@@ -554,6 +554,9 @@
 
       try {
         const res = await fetch('/api/clear-cache', { method: 'POST' });
+        if (!res.ok) {
+          throw new Error(`Server returned HTTP ${res.status}. Please restart the viewer in your terminal to apply the latest server update.`);
+        }
         const data = await res.json();
         if (data.success) {
           const banner = document.getElementById('cache-banner');

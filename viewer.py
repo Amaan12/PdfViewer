@@ -250,7 +250,7 @@ def api_cache_info():
     })
 
 
-@app.route("/api/clear-cache", methods=["POST"])
+@app.route("/api/clear-cache", methods=["GET", "POST"])
 def api_clear_cache():
     """Clear downloaded and converted book files from the local disk cache."""
     cleared_count = 0
@@ -259,8 +259,9 @@ def api_clear_cache():
         for p in CACHE_DIR.glob("*"):
             if p.is_file():
                 try:
-                    freed_bytes += p.stat().st_size
+                    size = p.stat().st_size
                     p.unlink(missing_ok=True)
+                    freed_bytes += size
                     cleared_count += 1
                 except Exception as e:
                     print(f"[Warning] Failed to delete {p}: {e}", file=sys.stderr)
