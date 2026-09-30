@@ -23,12 +23,21 @@ A lightweight, zero-configuration local server that lets you view PDF and EPUB f
 
 ## Quickstart
 
-### Method 1: 1-Line PowerShell Command (No Download / No Clone)
-Open PowerShell and run:
+### ⚡ 1-Click Setup (Desktop Shortcut & Taskbar Icon)
+Run this once in PowerShell:
+```powershell
+irm https://raw.githubusercontent.com/Amaan12/PdfViewer/main/setup.ps1 | iex
+```
+- **Creates a `GitHub PDF Viewer` shortcut on your Desktop with a custom book icon.**
+- **Right-click the desktop shortcut -> "Pin to taskbar"** to launch the viewer anytime in 1 click!
+- Automatically installs required dependencies and opens your browser immediately.
+
+---
+
+### Method 2: 1-Line Direct Launch (No Shortcut)
 ```powershell
 irm https://raw.githubusercontent.com/Amaan12/PdfViewer/main/run.ps1 | iex
 ```
-*(Automatically sets up everything and opens your browser!)*
 
 ---
 
