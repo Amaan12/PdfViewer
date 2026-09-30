@@ -77,7 +77,27 @@ http://localhost:5000/view?url=https://github.com/owner/repo/blob/main/doc.pdf
 | `--port` | Port to run the local server on | `5000` |
 | `--host` | Host address | `127.0.0.1` |
 | `--no-browser` | Run server without opening the browser | `False` |
-| `--clear-cache` | Clear cached document files from `.cache/` | `False` |
+---
+
+## Managing & Deleting Downloaded Books (Cache)
+
+When you view a book, it is saved to a local `.cache/` folder so reopening it is instantaneous. If you want to delete all downloaded books from your computer:
+
+### Case 1: If using `run.bat` or Local Folder
+- **Option A (Command)**: Run in terminal:
+  ```powershell
+  python viewer.py --clear-cache
+  ```
+- **Option B (File Explorer)**: Simply delete the `.cache` folder inside the `PdfViewer` folder.
+
+### Case 2: If using the 1-Line PowerShell Command
+Run this in PowerShell to delete all downloaded books:
+```powershell
+Remove-Item "$env:LOCALAPPDATA\PdfViewerApp\.cache" -Recurse -Force -ErrorAction SilentlyContinue
+```
+*(To completely remove the app as well, delete the `$env:LOCALAPPDATA\PdfViewerApp` folder).*
+
+> **Note**: Deleting the cache only removes the local copies from your machine. Your original books on GitHub remain 100% safe and untouched.
 
 ---
 
